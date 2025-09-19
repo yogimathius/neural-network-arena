@@ -1,0 +1,54 @@
+{
+  "name": "neural-network-arena-frontend",
+  "version": "0.1.0",
+  "description": "WebAssembly frontend for Neural Network Arena - competitive AI evolution platform",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "webpack --mode=production",
+    "dev": "webpack-dev-server --mode=development",
+    "build:wasm": "wasm-pack build --target web --out-dir www/pkg",
+    "build:all": "npm run build:wasm && npm run build",
+    "serve": "npm run build:wasm && npm run dev",
+    "test": "jest",
+    "lint": "eslint src --ext .ts,.tsx",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "d3": "^7.8.5",
+    "d3-selection": "^3.0.0",
+    "d3-scale": "^4.0.2",
+    "d3-axis": "^3.0.0",
+    "dat.gui": "^0.7.9"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/dat.gui": "^0.7.13",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "css-loader": "^6.8.1",
+    "eslint": "^8.45.0",
+    "html-webpack-plugin": "^5.5.3",
+    "jest": "^29.6.2",
+    "style-loader": "^3.3.3",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.1.6",
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4",
+    "webpack-dev-server": "^4.15.1"
+  },
+  "author": "Mathius Johnson",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mathiusjohnson/neural-network-arena"
+  },
+  "keywords": [
+    "neural-networks",
+    "evolution",
+    "webassembly",
+    "visualization",
+    "ai",
+    "competition",
+    "education"
+  ]
+}

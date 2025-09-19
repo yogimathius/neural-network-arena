@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neural Network Arena - Competitive AI Evolution</title>
+    <meta name="description" content="Watch neural networks evolve and compete in real-time virtual environments">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            background: linear-gradient(135deg, #0a0a23 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e0e0e0;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0a0a23 0%, #1a1a2e 50%, #16213e 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loading-title {
+            font-size: 3em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff88, #0088ff, #8800ff);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 3s ease infinite;
+            margin-bottom: 1em;
+        }
+
+        .loading-subtitle {
+            font-size: 1.2em;
+            color: #888;
+            margin-bottom: 2em;
+        }
+
+        .loading-bar {
+            width: 300px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(45deg, #00ff88, #0088ff);
+            width: 0%;
+            animation: loadingProgress 2s ease-in-out infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes loadingProgress {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+
+        .main-container {
+            display: none;
+            width: 100vw;
+            height: 100vh;
+            grid-template-columns: 1fr 400px;
+            grid-template-rows: 60px 1fr;
+            gap: 0;
+        }
+
+        .header {
+            grid-column: 1 / -1;
+            background: rgba(10, 10, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .header-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            background: linear-gradient(45deg, #00ff88, #0088ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9em;
+        }
+
+        .stat {
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .visualization-area {
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, rgba(0, 255, 136, 0.05) 0%, transparent 70%);
+        }
+
+        .control-panel {
+            background: rgba(10, 10, 35, 0.95);
+            backdrop-filter: blur(10px);
+            border-left: 1px solid #333;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .controls-section {
+            margin-bottom: 30px;
+        }
+
+        .controls-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #00ff88;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #333;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-label {
+            display: block;
+            font-size: 0.9em;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+
+        .control-button {
+            background: linear-gradient(45deg, #0066cc, #0088ff);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+            margin-right: 10px;
+            margin-bottom: 5px;
+        }
+
+        .control-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 136, 255, 0.3);
+        }
+
+        .control-button:active {
+            transform: translateY(0);
+        }
+
+        .control-button.danger {
+            background: linear-gradient(45deg, #cc0066, #ff0088);
+        }
+
+        .control-button.success {
+            background: linear-gradient(45deg, #00cc66, #00ff88);
+        }
+
+        .control-slider {
+            width: 100%;
+            background: #333;
+            border-radius: 10px;
+            height: 6px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #0088ff;
+            cursor: pointer;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.8em;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #00ff88;
+        }
+
+        .metric-label {
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .legend {
+            margin-top: 15px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            font-size: 0.8em;
+        }
+
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <h1 class="loading-title">Neural Network Arena</h1>
+        <p class="loading-subtitle">Initializing competitive AI evolution platform...</p>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+    </div>
+
+    <div class="main-container" id="mainContainer">
+        <header class="header">
+            <div class="header-title">🧠 Neural Network Arena</div>
+            <div class="header-stats">
+                <div class="stat">Gen: <span id="generation">0</span></div>
+                <div class="stat">Pop: <span id="population">0</span></div>
+                <div class="stat">Species: <span id="species">0</span></div>
+                <div class="stat">FPS: <span id="fps">0</span></div>
+            </div>
+        </header>
+
+        <div class="visualization-area">
+            <canvas id="mainCanvas" class="canvas"></canvas>
+            <canvas id="heatmapCanvas" class="canvas"></canvas>
+            <canvas id="networkCanvas" class="canvas"></canvas>
+        </div>
+
+        <div class="control-panel">
+            <div class="controls-section">
+                <h3 class="controls-title">🎮 Simulation Controls</h3>
+                <div class="control-group">
+                    <button class="control-button success" id="startBtn">▶ Start</button>
+                    <button class="control-button" id="pauseBtn">⏸ Pause</button>
+                    <button class="control-button danger" id="resetBtn">🔄 Reset</button>
+                </div>
+                <div class="control-group">
+                    <button class="control-button" id="stepBtn">⏭ Step</button>
+                    <button class="control-button" id="generationBtn">🧬 Next Generation</button>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">Simulation Speed</label>
+                    <input type="range" class="control-slider" id="speedSlider" min="0.1" max="5" step="0.1" value="1">
+                    <span id="speedValue">1.0x</span>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <h3 class="controls-title">👁 Visualization</h3>
+                <div class="control-group">
+                    <button class="control-button" id="heatmapBtn">🔥 Memory Heatmap</button>
+                    <button class="control-button" id="topologyBtn">🕸 Network Topology</button>
+                </div>
+                <div class="control-group">
+                    <button class="control-button" id="territoriesBtn">🗺 Territories</button>
+                    <button class="control-button" id="resourcesBtn">💎 Resources</button>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <h3 class="controls-title">📊 Live Metrics</h3>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value" id="avgFitness">0.0</div>
+                        <div class="metric-label">Avg Fitness</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="maxFitness">0.0</div>
+                        <div class="metric-label">Max Fitness</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="diversity">0.0</div>
+                        <div class="metric-label">Diversity</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value" id="pressure">0.0</div>
+                        <div class="metric-label">Env Pressure</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <h3 class="controls-title">💾 Data Export</h3>
+                <div class="control-group">
+                    <button class="control-button" id="exportJsonBtn">📄 Export JSON</button>
+                    <button class="control-button" id="exportCsvBtn">📊 Export CSV</button>
+                </div>
+            </div>
+
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #00ff88;"></div>
+                    <span>High Energy Warriors</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #0088ff;"></div>
+                    <span>Medium Energy Warriors</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ff8800;"></div>
+                    <span>Low Energy Warriors</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #ffff00;"></div>
+                    <span>Resources</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: rgba(255,255,255,0.2);"></div>
+                    <span>Territories</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

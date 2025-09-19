@@ -1,0 +1,34 @@
+import { SimulationConfig } from '../types/simulation';
+export declare class Application {
+    private config;
+    private wasmModule;
+    private simulation;
+    private mainRenderer;
+    private heatmapRenderer;
+    private networkRenderer;
+    private controlPanel;
+    private performanceMonitor;
+    private isRunning;
+    private animationId;
+    private lastFrameTime;
+    private frameCount;
+    private settings;
+    constructor(config: SimulationConfig);
+    initialize(): Promise<void>;
+    private setupCanvases;
+    private setupEventListeners;
+    private startRenderLoop;
+    private updateVisualization;
+    private updateUI;
+    start(): void;
+    pause(): void;
+    reset(): void;
+    step(): void;
+    runGeneration(): void;
+    toggleHeatmap(): void;
+    toggleTopology(): void;
+    toggleTerritories(): void;
+    toggleResources(): void;
+    exportData(format: string): void;
+    destroy(): void;
+}
