@@ -1,30 +1,30 @@
 # Neural Network Arena
 
-Competitive neural network evolution platform with a custom virtual machine, implemented in Rust and compiled to WebAssembly for a web UI.
+Competitive neural network evolution platform with custom virtual machine
 
-## Structure
+## Scope and Direction
+- Project path: `ai-ml-research/neural-network-arena`
+- Primary tech profile: Node.js/TypeScript or JavaScript, Rust
+- Audit date: `2026-02-08`
 
-- `src/` - Core Rust engine and VM
-- `www/` - Web frontend wrapper for WASM
-- `benches/` - Criterion benchmarks
-- `tests/` - Rust tests
-
-## Current Status
-
-- Rust crate and WASM bindings are present.
-- Web UI exists in `www`, but runtime behavior not verified in this audit.
-- Operational estimate: **40%** (core engine scaffold, unverified integration).
+## What Appears Implemented
+- Detected major components: `src/`
+- No clear API/controller routing signals were detected at this scope
+- Cargo metadata is present for Rust components
 
 ## API Endpoints
+- No explicit HTTP endpoint definitions were detected at the project root scope
 
-- None. This is a Rust/WASM library with a browser UI.
+## Testing Status
+- `www` package has test scripts: `test`
+- `cargo test` appears applicable for Rust components
+- This audit did not assume tests are passing unless explicitly re-run and captured in this session
 
-## Tests
-
-- Rust tests and benches exist but were not run (avoided long Rust builds).
+## Operational Assessment
+- Estimated operational coverage: **37%**
+- Confidence level: **medium**
 
 ## Future Work
-
-- Validate WASM build pipeline and browser runtime.
-- Add integration tests for VM and evolution logic.
-- Document public API for embedding and experimentation.
+- Document and stabilize the external interface (CLI, API, or protocol) with explicit examples
+- Run the detected tests in CI and track flakiness, duration, and coverage
+- Validate runtime claims in this README against current behavior and deployment configuration
